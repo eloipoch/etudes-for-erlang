@@ -1,7 +1,7 @@
 %%% @author Eloi Poch <eloi.poch@gmail.com>
 %%% @doc Stats module.
 %%%
-%%% @version 0.2
+%%% @version 0.3
 
 -module(stats).
 -author("eloipoch").
@@ -57,7 +57,7 @@ minimum([Value | Tail], SmallestValue) when Value > SmallestValue ->
 maximum([], GreatestValue) ->
   GreatestValue;
 
-maximum([Value | Tail], GreatestValue) when Value > GreatestValue ->
+maximum([Value | Tail], GreatestValue) when Value >= GreatestValue ->
   maximum(Tail, Value);
 
 maximum([Value | Tail], GreatestValue) when Value < GreatestValue ->

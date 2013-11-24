@@ -1,7 +1,7 @@
 %%% @author Eloi Poch <eloi.poch@gmail.com>
-%%% @doc Convert dates.
+%%% @doc Show teeth that need attention due to excessive pocket depth..
 %%%
-%%% @version 0.2
+%%% @version 0.1
 
 -module(teeth).
 -author("eloipoch").
@@ -11,7 +11,7 @@
 -export([alert/1]).
 
 
-%% @doc Returns the list of the teeth with alerts.
+%% @doc Returns the list of the bad teeth.
 -spec(alert(list(list(integer()))) -> list(integer())).
 
 alert(ToothList) ->
@@ -22,21 +22,29 @@ alert(ToothList) ->
 %% Internal functions
 
 
-%% @doc Returns the list of the teeth with alerts.
+%% @doc Helper function that returns the bad teeth.
 -spec(alert(list(list(integer())), integer(), list(integer())) -> list(integer())).
 
-alert([], _ToothNumber, AlertList) ->
-  lists:reverse(AlertList);
+alert([], _ToothPosition, BadTeeth) ->
+  lists:reverse(BadTeeth);
 
-alert([ToothLocations | ToothList], ToothNumber, AlertList) ->
-  case has_alerts(ToothLocations) of
-    true -> alert(ToothList, ToothNumber + 1, [ToothNumber | AlertList]);
-    false -> alert(ToothList, ToothNumber + 1, AlertList)
-  end.
+alert([ToothLocations | ToothList], ToothPosition, BadTeeth) ->
+  NewBadTeeth = add_tooth_to_alert_list(is_bad_tooth(ToothLocations), ToothPosition, BadTeeth),
+  alert(ToothList, ToothPosition + 1, NewBadTeeth).
 
 
-%% @doc Returns if the tooth has an alert.
--spec(has_alerts(list(integer())) -> boolean()).
+%% @doc Helper function that returns if a tooth is bad.
+-spec(is_bad_tooth(list(integer())) -> boolean()).
 
-has_alerts(ToothLocations) ->
-  stats:maximum(ToothLocations) >= 4.
+is_bad_tooth(Tooth) ->
+  stats:maximum(Tooth) >= 4.
+
+
+%% @doc Helper function that add a bad tooth to the bad teeth.
+-spec(add_tooth_to_alert_list(boolean(), integer(), list(integer())) -> list(integer())).
+
+add_tooth_to_alert_list(true, ToothPosition, BadTeeth) ->
+  [ToothPosition | BadTeeth];
+
+add_tooth_to_alert_list(false, _ToothPosition, BadTeeth) ->
+  BadTeeth.
